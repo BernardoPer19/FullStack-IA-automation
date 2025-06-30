@@ -1,7 +1,8 @@
-import { z } from 'zod';
-import { CreateProductInput } from '../types/products';
+import { z } from "zod";
+import { CreateProductInput } from "../types/products";
 
-export const ProductSchema = z.object({
+// Zod schema ajustado a CreateProductInput (sin createdAt, updatedAt, isActive)
+export const ProductCreateSchema = z.object({
   name: z.string()
     .min(2, { message: 'El nombre debe tener al menos 2 caracteres' })
     .max(100, { message: 'El nombre no debe exceder 100 caracteres' }),
@@ -18,20 +19,13 @@ export const ProductSchema = z.object({
     .int({ message: 'El stock debe ser un número entero' })
     .nonnegative({ message: 'El stock no puede ser negativo' }),
 
-  isActive: z.boolean(),
-
-  createdAt: z.date()
-    .default(() => new Date()),
-
-  updatedAt: z.date()
-    .default(() => new Date()),
-
   categoryId: z.number()
     .int({ message: 'El ID de categoría debe ser un entero' })
     .positive({ message: 'El ID de categoría debe ser mayor a 0' })
-    .optional(), // puede ser nulo si es opcional en tu modelo
+    .optional()
 });
 
+// Función de safe parse
 export function safeParseProduct(data: unknown) {
-  return ProductSchema.safeParse(data);
+  return ProductCreateSchema.safeParse(data);
 }
